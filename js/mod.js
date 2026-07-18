@@ -1,7 +1,6 @@
 let modInfo = {
-	name: "The ??? Table",
-	nameI18N: "The ??? Table",// When you enabled the internationalizationMod, this is the name in the second language
-	id: "mymod2",
+	name: "The Points Table",
+	id: "points-table",
 	author: "nobody",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
@@ -85,7 +84,7 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(1)
+	let gain = new Decimal(0)
 	return gain
 }
 
@@ -103,7 +102,7 @@ var displayThings = [
 
 // You can write code here to easily display information in the top-left corner
 function displayThingsRes(){
-	return 'Points: '+format(player.points)+' | '
+	return ''
 }
 
 // Determines when the game "ends"
