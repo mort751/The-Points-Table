@@ -85,6 +85,8 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(0)
+	gain = gain.add(buyableEffect('po', 11))
+	gain = gain.mul(buyableEffect('po', 12))
 	return gain
 }
 

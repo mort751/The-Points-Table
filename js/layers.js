@@ -19,7 +19,7 @@ addLayer("1layer", {
 })
 
 addLayer("po", {
-    name: "points", // This is optional, only used in a few places, If absent it just uses the layer id
+    name: "Point", // This is optional, only used in a few places, If absent it just uses the layer id
     symbol: "Points", // Second name of symbol for internationalization (i18n) if internationalizationMod is enabled
     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     row: 0, // Row the layer is in on the tree (0 is the first row)
@@ -44,12 +44,15 @@ addLayer("po", {
     tabFormat: [
        ["display-text", function() { return getPointsDisplay() }],
        "blank",
+       "buyables"
     ],
     layerShown() { return true },
     buyables: {
     11: {
-        cost(x) { return new Decimal(10).mul(Decimal.pow(1.15, x)) },
-        display() { return format(this.cost()) + " " + modInfo.pointsName + "<br>" },
+        description: "Increases base point generation.",
+        title() { return tmp[this.layer].name + " Upgrade " + this.id + " (" + getBuyableAmount(this.layer, this.id) + ")" },
+        cost(x) { return new Decimal(10).mul(Decimal.pow(1.25, x)) },
+        display() { return this.description + "<br>Cost: " + format(this.cost()) + " " + modInfo.pointsName + "<br>Effect: " + this.effectDisplay() },
         canAfford() { return player.points.gte(this.cost()) },
         buy() {
             player.points = player.points.sub(this.cost())
@@ -59,7 +62,46 @@ addLayer("po", {
         base() {
             let base = new Decimal(1)
             return base
-        }
+        },
+        effectDisplay() { return "+" + format(this.effect()) + " (+" + format(this.base()) + " each)" },
+        unlocked() { return true }
+    },
+    12: {
+        description: "Multiplies point generation.",
+        title() { return tmp[this.layer].name + " Upgrade " + this.id + " (" + getBuyableAmount(this.layer, this.id) + ")" },
+        cost(x) { return new Decimal(200).mul(Decimal.pow(2.5, x.pow(1.35))) },
+        display() { return this.description + "<br>Cost: " + format(this.cost()) + " " + modInfo.pointsName + "<br>Effect: " + this.effectDisplay() },
+        canAfford() { return player.points.gte(this.cost()) },
+        buy() {
+            player.points = player.points.sub(this.cost())
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        },
+        effect(x) { return Decimal.pow(this.base(), x)},
+        base() {
+            let base = new Decimal(2)
+            base = base.add(buyableEffect(this.layer, 13))
+            return base
+        },
+        effectDisplay() { return "" + format(this.effect()) + "x (" + format(this.base()) + "x each)" },
+        unlocked() { return getBuyableAmount(this.layer,  11).gt(0) }
+    },
+    13: {
+        description: "Increases PU11's base.",
+        title() { return tmp[this.layer].name + " Upgrade " + this.id + " (" + getBuyableAmount(this.layer, this.id) + ")" },
+        cost(x) { return new Decimal(10000).mul(Decimal.pow(x.sub(1).max(0).mul(x.add(1)).add(3), x)) },
+        display() { return this.description + "<br>Cost: " + format(this.cost()) + " " + modInfo.pointsName + "<br>Effect: " + this.effectDisplay() },
+        canAfford() { return player.points.gte(this.cost()) },
+        buy() {
+            player.points = player.points.sub(this.cost())
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        },
+        effect(x) { return Decimal.mul(this.base(), x)},
+        base() {
+            let base = new Decimal(1)
+            return base
+        },
+        effectDisplay() { return "+" + format(this.effect()) + " (+" + format(this.base()) + " each)" },
+        unlocked() { return getBuyableAmount(this.layer,  12).gt(0) }
     },
     }
 })
