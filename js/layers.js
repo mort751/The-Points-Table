@@ -20,7 +20,7 @@ addLayer("1layer", {
 
 addLayer("po", {
     name: "points", // This is optional, only used in a few places, If absent it just uses the layer id
-    symbolI18N: "Points", // Second name of symbol for internationalization (i18n) if internationalizationMod is enabled
+    symbol: "Points", // Second name of symbol for internationalization (i18n) if internationalizationMod is enabled
     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     row: 0, // Row the layer is in on the tree (0 is the first row)
     startData() { return {
@@ -45,8 +45,22 @@ addLayer("po", {
        ["display-text", function() { return getPointsDisplay() }],
        "blank",
     ],
-    layerShown(){return true},
+    layerShown() { return true },
+    buyables: {
+    11: {
+        cost(x) { return new Decimal(10).mul(Decimal.pow(1.15, x)) },
+        display() { return format(this.cost()) + " " + modInfo.pointsName + "<br>" },
+        canAfford() { return player.points.gte(this.cost()) },
+        buy() {
+            player.points = player.points.sub(this.cost())
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        },
+        effect(x) { return Decimal.mul(this.base(), x)},
+        base() {
+            let base = new Decimal(1)
+            return base
+        }
+    },
+    }
 })
 
-// You can delete the second name from each option if internationalizationMod is not enabled.
-// You can use function i18n(text, otherText) to return text in two different languages. Typically, text is English and otherText is Chinese. If changedDefaultLanguage is true, its reversed
