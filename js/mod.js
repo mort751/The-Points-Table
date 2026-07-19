@@ -87,6 +87,7 @@ function getPointGen() {
 	let gain = new Decimal(0)
 	gain = gain.add(buyableEffect('po', 11))
 	gain = gain.mul(buyableEffect('po', 12))
+	if(player.mu.unlocked) gain = gain.mul(tmp.mu.effect)
 	return gain
 }
 
