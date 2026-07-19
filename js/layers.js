@@ -117,8 +117,8 @@ addLayer("mu", {
     }},
     color: "#e42a2a",
     requires: new Decimal("1e30"), // Can be a function that takes requirement increases into account
-    resource: "multiplier points", // Name of prestige currency
-    baseResource: "points", // Name of resource prestige is based on
+    resource: "Multiplier Points", // Name of prestige currency
+    baseResource: "Points", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent: Decimal.div(7, 6), // Prestige currency exponent
@@ -141,8 +141,40 @@ addLayer("mu", {
        "buyables"
     ],
     layerShown() { return getBuyableAmount('po', 13).gte(10) || player[this.layer].unlocked },
-    effect() { return player.mu.points.add(1) },
-    effectDescription() { return "which are multiplying point gain by " + format(tmp[this.layer].effect) + "x" },
-    
+    effect() { return player.mu.points.add(tmp[this.layer].baseEffect) },
+    baseEffect() {
+        let base = new Decimal(1)
+        if(hasMilestone(this.layer, 1)) base = base.add(buyableEffect(this.layer, 11))
+        return base
+    },
+    effectDescription() { return "which are multiplying point gain by " + format(tmp[this.layer].effect) + "x (+" + format(tmp[this.layer].baseEffect) + " each)" },
+    milestones: {
+    1: {
+        requirementDescription: "2 Multiplier Points",
+        effectDescription: "Unlock 3 new Point Upgrades, and a Multiplier Point Upgrade",
+        done() { return player[this.layer].points.gte(2) },
+        unlocked() { return player[this.layer].points.gte(1) },
+    },
+    },
+    buyable: {
+        11: {
+        description: "Increases the effect increase per Multiplier Point.",
+        title() { return tmp[this.layer].name + " Upgrade " + this.id + " (" + getBuyableAmount(this.layer, this.id) + ")" },
+        cost(x) { return new Decimal(10).mul(Decimal.pow(1.25, x)) },
+        display() { return this.description + "<br>Cost: " + format(this.cost()) + " " + tmp[this.layer].resource + "<br>Effect: " + this.effectDisplay() },
+        canAfford() { return player[this.layer].points.gte(this.cost()) },
+        buy() {
+            player[this.layer].points = player[this.layer].points.sub(this.cost())
+            setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        },
+        effect(x) { return Decimal.mul(this.base(), x)},
+        base() {
+            let base = new Decimal(1)
+            return base
+        },
+        effectDisplay() { return "+" + format(this.effect()) + " (+" + format(this.base()) + " each)" },
+        unlocked() { return hasMilestone(this.layer, 1) }
+        },
+    }
 })
 

@@ -2,7 +2,7 @@ let modInfo = {
 	name: "The Points Table",
 	id: "points-table",
 	author: "nobody",
-	pointsName: "points",
+	pointsName: "Points",
 	modFiles: ["layers.js", "tree.js"],
 
 	internationalizationMod: false,
