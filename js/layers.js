@@ -106,3 +106,40 @@ addLayer("po", {
     }
 })
 
+addLayer("mu", {
+    name: "Multiplier", // This is optional, only used in a few places, If absent it just uses the layer id
+    symbol: "Multiplier Points", // Second name of symbol for internationalization (i18n) if internationalizationMod is enabled
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    row: 1, // Row the layer is in on the tree (0 is the first row)
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+    }},
+    color: "#e42a2a",
+    requires: new Decimal("1e30"), // Can be a function that takes requirement increases into account
+    resource: "multiplier points", // Name of prestige currency
+    baseResource: "points", // Name of resource prestige is based on
+    baseAmount() {return player.points}, // Get the current amount of baseResource
+    type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent: 1, // Prestige currency exponent
+    base: new Decimal('1e6'),
+    canBuyMax() { return true },
+    gainMult() { // Calculate the multiplier for main currency from bonuses
+        mult = new Decimal(1)
+        return mult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        return new Decimal(1)
+    },
+    tabFormat: [
+       ["display-text", function() { return getPointsDisplay() }],
+       "main-display",
+       "prestige-button",
+       "blank",
+       "buyables"
+    ],
+    layerShown() { return getBuyableAmount('po', 13).gte(10) || player[this.layer].unlocked },
+    effect() { return player.mu.points.add(1) },
+    effectDescription() { return "which are multiplying point gain by " + tmp[this.layer].effect + "x" },
+})
+
