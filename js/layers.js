@@ -156,11 +156,11 @@ addLayer("mu", {
         unlocked() { return player[this.layer].points.gte(1) },
     },
     },
-    buyable: {
-        11: {
-        description: "Increases the effect increase per Multiplier Point.",
+    buyables: {
+    11: {
+        description: "Increases the multiplier increase per Multiplier Point.",
         title() { return tmp[this.layer].name + " Upgrade " + this.id + " (" + getBuyableAmount(this.layer, this.id) + ")" },
-        cost(x) { return new Decimal(10).mul(Decimal.pow(1.25, x)) },
+        cost(x) { return new Decimal(1).mul(x.mul(x.add(1)).div(2)) },
         display() { return this.description + "<br>Cost: " + format(this.cost()) + " " + tmp[this.layer].resource + "<br>Effect: " + this.effectDisplay() },
         canAfford() { return player[this.layer].points.gte(this.cost()) },
         buy() {
@@ -174,7 +174,7 @@ addLayer("mu", {
         },
         effectDisplay() { return "+" + format(this.effect()) + " (+" + format(this.base()) + " each)" },
         unlocked() { return hasMilestone(this.layer, 1) }
-        },
+    },
     }
 })
 
