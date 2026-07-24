@@ -135,7 +135,7 @@ addLayer("mu", {
 		points: new Decimal(0),
     }},
     color: "#e42a2a",
-    requires: new Decimal("1e24"), // Can be a function that takes requirement increases into account
+    requires: new Decimal("1e32"), // Can be a function that takes requirement increases into account
     resource: "Multiplier Points", // Name of prestige currency
     baseResource: "Points", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
@@ -159,7 +159,7 @@ addLayer("mu", {
        "blank",
        "buyables"
     ],
-    layerShown() { return player.points.gte("1e24") || player[this.layer].unlocked },
+    layerShown() { return player.points.gte("1e32") || player[this.layer].unlocked },
     effect() { return player.mu.points.add(tmp[this.layer].baseEffect) },
     baseEffect() {
         let base = new Decimal(1)
